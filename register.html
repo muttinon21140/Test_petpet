@@ -24,8 +24,8 @@
         padding: 0;
       }
       .container {
-        /* width: 100%;
-        max-width: 450px; */
+        width: 100%;
+        max-width: 450px;
         background: #fff;
         padding: 20px;
         border-radius: 0;
@@ -158,7 +158,7 @@
   </head>
   <body>
     <div class="container">
-      <h2 class="pridi-semibold">ลงทะเบียนผู้ใช้งาน (ทดสอบ)</h2>
+      <h2 class="pridi-semibold">ลงทะเบียนผู้ใช้งาน</h2>
       <form
         class="pridi-semibold"
         id="registerForm"
@@ -215,17 +215,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-      const params = new URLSearchParams(window.location.search);
-
-      const userId = params.get("userId");
-      const userLineName = params.get("displayName");
-      const userPictureUrl = params.get("pictureUrl"); // ถ้ามี
-
-      console.log("userId:", userId);
-
-      if (!userId) {
-        alert("ไม่พบ userId");
-      }
+      const userId = "<?= userId ?>";
+      const userLineName = "<?= userLineName ?>";
+      const userPictureUrl = "<?= profileImage ?>";
 
       function showLoading() {
         document.getElementById("loadingOverlay").style.display = "flex";
@@ -291,7 +283,7 @@
           return;
         }
 
-        const data = {
+        const adddataUser = {
           line_uid: userId,
           line_name: userLineName,
           profile_image: userPictureUrl,
@@ -301,45 +293,30 @@
           address: document.getElementById("address").value,
         };
 
-        fetch("/.netlify/functions/registerUser", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        })
-          .then((res) => res.json())
-          .then((result) => {
+        google.script.run
+          .withSuccessHandler(() => {
             hideLoading();
-
-            if (result.success) {
-              Swal.fire(
-                "สำเร็จ!",
-                "ระบบได้รับข้อมูลการลงทะเบียนแล้ว",
-                "success"
-              ).then(() => {
-                showLoading();
-                window.location.href =
-                  "?userId=" + userId + "&displayName=" + userLineName;
-              });
-            } else {
-              throw new Error(result.error || "Register failed");
-            }
+            Swal.fire(
+              "สำเร็จ!",
+              "ระบบได้รับข้อมูลการลงทะเบียนแล้ว",
+              "success"
+            ).then(() => {
+              showLoading();
+              window.location.href =
+                "?userId=" + userId + "&displayName=" + userLineName;
+            });
           })
-          .catch((err) => {
-            console.error(err);
-            hideLoading();
-
+          .withFailureHandler(() => {
             Swal.fire(
               "ผิดพลาด",
               "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่",
               "error"
             );
-
             submitBtn.disabled = false;
             submitBtn.textContent = "ลงทะเบียน";
-            submitBtn.style.backgroundColor = "#275c27";
-          });
+          })
+          .saveUserToSheet(adddataUser);
+        return false;
       }
 
       function showError(input, message) {

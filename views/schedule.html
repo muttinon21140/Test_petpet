@@ -1,0 +1,223 @@
+<style>
+    /* -------------------- Schedule Page Styles -------------------- */
+    .app-container-schedule {
+        width: 100%;
+        max-width: 450px;
+        box-sizing: border-box;
+    }
+    .header {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .calendar-placeholder {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        margin-bottom: 25px;
+    }
+    
+    /* ----- Calendar Grid Styles ----- */
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        color: #3cb371;
+        font-weight: 600;
+    }
+    .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+    }
+    .calendar-cell {
+        padding: 10px 0;
+        text-align: center;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .calendar-cell:hover:not(.empty) {
+        background-color: #f0f4f9;
+    }
+    .calendar-cell.active {
+        background-color: #3cb371;
+        color: white;
+        font-weight: bold;
+    }
+    .calendar-cell.empty {
+        background-color: transparent;
+        cursor: default;
+    }
+    .calendar-cell.has-event {
+        position: relative;
+    }
+    .calendar-cell.has-event::after {
+        content: '';
+        position: absolute;
+        bottom: 4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 5px;
+        height: 5px;
+        background-color: #0073ff;
+        border-radius: 50%;
+    }
+    
+    /* ----- Schedule List Styles ----- */
+    .schedule-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .schedule-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border-left: 5px solid #3cb371;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .schedule-card.past {
+        border-left: 5px solid #ccc;
+        opacity: 0.8;
+    }
+    .schedule-info .date {
+        font-size: 0.85rem;
+        color: #3cb371;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    .schedule-card.past .date {
+        color: #888;
+    }
+    .schedule-info .title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+    }
+    .schedule-info .pet-tag {
+        font-size: 0.75rem;
+        background: #f0f4f9;
+        padding: 4px 10px;
+        border-radius: 12px;
+        color: #555;
+        display: inline-block;
+        margin-top: 8px;
+        border: 1px solid #e0e0e0;
+    }
+    
+    /* ----- Buttons & Titles ----- */
+    .add-appointment-btn {
+        background-color: #0073ff;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 115, 255, 0.2);
+        width: 100%;
+        transition: background-color 0.2s, transform 0.1s;
+        margin-top: 10px;
+    }
+    .add-appointment-btn:hover {
+        background-color: #005bb5;
+    }
+    .add-appointment-btn:active {
+        transform: scale(0.98);
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 15px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+
+<div class="app-container-schedule">
+    <div class="header">ปฏิทินนัดหมาย</div>
+
+    <!-- 1. Calendar Section -->
+    <div class="calendar-placeholder">
+        <div class="calendar-header">
+            <span style="cursor: pointer; padding: 5px;" id="prev-month-btn">&#10094;</span>
+            <h3 id="calendar-month-year" style="margin: 0;">มีนาคม 2026</h3>
+            <span style="cursor: pointer; padding: 5px;" id="next-month-btn">&#10095;</span>
+        </div>
+        
+        <div class="calendar-days">
+            <div>อา</div><div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div>ส</div>
+        </div>
+        
+        <div class="calendar-grid" id="calendar-grid">
+            <!-- ตัวอย่างโครงสร้าง UI ปฏิทิน (รอสลับไปใช้ JS สร้าง) -->
+            <div class="calendar-cell empty"></div>
+            <div class="calendar-cell">1</div>
+            <div class="calendar-cell">2</div>
+            <div class="calendar-cell">3</div>
+            <div class="calendar-cell has-event">4</div>
+            <div class="calendar-cell active">5</div>
+            <div class="calendar-cell">6</div>
+            <div class="calendar-cell">7</div>
+        </div>
+        
+        <button class="add-appointment-btn" onclick="location.hash='add-schedule'">+ เพิ่มนัดหมายใหม่</button>
+    </div>
+
+    <!-- 2. Upcoming Schedules -->
+    <h3 class="section-title">นัดหมายที่กำลังจะมาถึง</h3>
+    <div class="schedule-list" id="upcoming-schedules">
+        <!-- ข้อมูล Mockup รอเปลี่ยนการ Render ผ่าน JS -->
+        <div class="schedule-card">
+            <div class="schedule-info">
+                <div class="date">พรุ่งนี้, 14:00 น.</div>
+                <div class="title">ตรวจสุขภาพประจำปี</div>
+                <div class="pet-tag">น้องแหลม</div>
+            </div>
+        </div>
+        <div class="schedule-card">
+            <div class="schedule-info">
+                <div class="date">30 เม.ย. 2026, 10:00 น.</div>
+                <div class="title">อาบน้ำตัดขน</div>
+                <div class="pet-tag">น้องแซลม่อน</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Past Schedules -->
+    <h3 class="section-title" style="color: #777; margin-top: 30px;">ประวัตินัดหมาย</h3>
+    <div class="schedule-list" id="past-schedules">
+        <!-- ข้อมูล Mockup ประวัติย้อนหลัง -->
+        <div class="schedule-card past">
+            <div class="schedule-info">
+                <div class="date">15 มี.ค. 2026</div>
+                <div class="title">ฉีดวัคซีนรวม</div>
+                <div class="pet-tag">น้องแหลม</div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: "Prompt", sans-serif;
+            background-color: #f0f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            background-color: #ddd;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            background-image: url('https://via.placeholder.com/100/3cb371/ffffff?text=U');
+            background-size: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .profile-role {
+            font-size: 0.85rem;
+            color: #3cb371;
+            background: #e0ffe0;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        .info-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #f9f9f9;
+            padding-bottom: 10px;
+        }
+        .info-row:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .info-label {
+            width: 90px;
+            font-weight: 500;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        .info-value {
+            flex-grow: 1;
+            color: #333;
+            font-size: 0.9rem;
+            text-align: right;
+            word-break: break-all;
+        }
+        .edit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #0073ff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+        .edit-btn:hover {
+            background-color: #005bb5;
+        }
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: transparent;
+            color: #d9534f;
+            border: 1px solid #d9534f;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+        .logout-btn:hover {
+            background-color: #fff0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="profile-header">
+            <script>
+                // This script will attempt to grab the displayName/pictureUrl from the parent frame if possible, 
+                // but since it's an iframe it might have same-origin policies or we can pass it via URL parameters.
+                // For a mockup, we can read URL parameters if any.
+                const urlParams = new URLSearchParams(window.location.search);
+                const displayName = urlParams.get('displayName') || 'ผู้ใช้งานระบบ';
+                const pictureUrl = urlParams.get('pictureUrl');
+                
+                if (pictureUrl) {
+                    document.write(`<div class="profile-image" style="background-image: url('${pictureUrl}')"></div>`);
+                } else {
+                    document.write(`<div class="profile-image"></div>`);
+                }
+                document.write(`<div class="profile-name">${displayName}</div>`);
+            </script>
+            <noscript>
+                <div class="profile-image"></div>
+                <div class="profile-name">มติมนต์ สำลีทอง</div>
+            </noscript>
+            <div class="profile-role">เจ้าของสัตว์เลี้ยง</div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-row">
+                <div class="info-label">เบอร์โทรศัพท์</div>
+                <div class="info-value">081-234-5678</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">อีเมล</div>
+                <div class="info-value">matimon@example.com</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">ที่อยู่</div>
+                <div class="info-value">123 ถ.สุขุมวิท กรุงเทพฯ</div>
+            </div>
+        </div>
+
+        <button class="edit-btn">แก้ไขข้อมูลส่วนตัว</button>
+        <button class="logout-btn">ออกจากระบบ</button>
+    </div>
+</body>
+</html>

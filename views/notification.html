@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: "Prompt", sans-serif;
+            background-color: #f0f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+        .header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .notification-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .icon {
+            background-color: #e0ffe0;
+            color: #2e8b57;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        .icon.alert {
+            background-color: #ffeef0;
+            color: #d9534f;
+        }
+        .content {
+            flex-grow: 1;
+        }
+        .title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .desc {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .time {
+            font-size: 0.75rem;
+            color: #999;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">การแจ้งเตือน</div>
+
+        <div class="notification-card">
+            <div class="icon">💉</div>
+            <div class="content">
+                <div class="title">ถึงกำหนดฉีดวัคซีน</div>
+                <div class="desc">น้องแซลม่อนถึงกำหนดฉีดวัคซีนป้องกันโรคพิษสุนัขบ้าแล้ว สามารถนัดหมายคลินิกผ่านแอปได้เลยค่ะ</div>
+                <div class="time">วันนี้, 10:00 น.</div>
+            </div>
+        </div>
+
+        <div class="notification-card">
+            <div class="icon alert">⚕️</div>
+            <div class="content">
+                <div class="title">นัดพบสัตวแพทย์</div>
+                <div class="desc">พรุ่งนี้มีนัดตรวจสุขภาพน้องแหลม เวลา 14:00 น. ที่คลินิกสัตว์รักษ์สัตว์</div>
+                <div class="time">เมื่อวานนี้, 15:30 น.</div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

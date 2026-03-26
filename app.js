@@ -1,6 +1,6 @@
 const liffId = "2007981677-Z8m3omk4";
 let isRegistered = false;
-const NETLIFY_FUNCTION_URL = "https://petpettest.netlify.app/.netlify/functions/checkUser";
+const NETLIFY_FUNCTION_URL = "https://petpettest.netlify.app/.netlify/functions/api";
 
 async function initializeLiff() {
   console.log("[LIFF] initialize start");
@@ -83,8 +83,8 @@ function checkRegistration(userId) {
 
   // *** ลบโค้ด JSONP เดิมที่สร้าง <script> และเปิดเผย Apps Script URL ออกไป ***
 
-  // ใช้ fetch API เพื่อเรียก Proxy แทน
-  return fetch(`${NETLIFY_FUNCTION_URL}?userId=${encodeURIComponent(userId)}`)
+  // ใช้ fetch API เพื่อเรียก Proxy เชื่อมไป action=checkUser
+  return fetch(`${NETLIFY_FUNCTION_URL}?action=checkUser&userId=${encodeURIComponent(userId)}`)
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -146,7 +146,9 @@ async function loadPage(page) {
   console.log("[SPA] load page", page);
 
   try {
-    const res = await fetch('./' + page + ".html");
+    // If the page is register, it's located at root. Otherwise, look in views folder.
+    const pathPrefix = page === 'register' ? './' : './views/';
+    const res = await fetch(pathPrefix + page + ".html");
     const html = await res.text();
     document.getElementById("app").innerHTML = html;
 
