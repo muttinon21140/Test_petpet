@@ -1,5 +1,6 @@
 const liffId = "2007981677-Z8m3omk4";
 let isRegistered = false;
+let userProfile = null; // เก็บข้อมูลผู้ใช้ไว้ทั่วแอป
 const NETLIFY_FUNCTION_URL = "https://petpettest.netlify.app/.netlify/functions/api";
 
 async function initializeLiff() {
@@ -17,12 +18,12 @@ async function initializeLiff() {
 
   console.log("[LIFF] logged in");
 
-  const profile = await liff.getProfile();
-  console.log("[LIFF] profile", profile);
+  userProfile = await liff.getProfile();
+  console.log("[LIFF] profile", userProfile);
 
   // 🔍 เช็คว่าลงทะเบียนหรือยัง
-  console.log("[CHECK] checking registration for", profile.userId);
-  const result = await checkRegistration(profile.userId);
+  console.log("[CHECK] checking registration for", userProfile.userId);
+  const result = await checkRegistration(userProfile.userId);
   isRegistered = result.registered;
   console.log("[CHECK] result", result);
 
@@ -47,43 +48,14 @@ async function initializeLiff() {
   }
 
   // ดึงโปรไฟล์
-  updateUserId(profile.userId);
-  updateDisplayName(profile.displayName);
-  updatePictureUrl(profile.pictureUrl);
+  updateUserId(userProfile.userId);
+  updateDisplayName(userProfile.displayName);
+  updatePictureUrl(userProfile.pictureUrl);
 }
-
-// function checkRegistration(userId) {
-//   console.log("[JSONP] prepare request", userId);
-
-//   return new Promise((resolve) => {
-//     const cb = "cb_" + Date.now();
-//     console.log("[JSONP] callback =", cb);
-//     const script = document.createElement("script");
-
-//     window[cb] = (data) => {
-//       console.log("[JSONP] response", data);
-//       resolve(data);
-//       delete window[cb];
-//       script.remove(); // ✅ เพิ่มบรรทัดนี้
-//     };
-
-//     script.src =
-//       "https://script.google.com/macros/s/AKfycbx29C1E_Gz-TI8axMoJSHgWHj2LLEcW90xzcq6IYKnTlWQ2k2e6oQ78CTUgW2jltoDQhA/exec" +
-//       "?action=checkUser" +
-//       "&userId=" + encodeURIComponent(userId) +
-//       "&callback=" + cb;
-
-//     console.log("[JSONP] request url", script.src);
-//     document.body.appendChild(script);
-//   });
-// }
 
 function checkRegistration(userId) {
   console.log("[PROXY] prepare request", userId);
-
-  // *** ลบโค้ด JSONP เดิมที่สร้าง <script> และเปิดเผย Apps Script URL ออกไป ***
-
-  // ใช้ fetch API เพื่อเรียก Proxy เชื่อมไป action=checkUser
+  // ใช้ fetch API เพื่อเรียก Proxy แทน
   return fetch(`${NETLIFY_FUNCTION_URL}?action=checkUser&userId=${encodeURIComponent(userId)}`)
     .then(response => {
       if (!response.ok) {
@@ -100,8 +72,6 @@ function checkRegistration(userId) {
       return { registered: false };
     });
 }
-
-// *** โค้ดส่วนอื่นๆ ที่ไม่ได้แสดงในนี้ (initializeLiff, updateUserId, ฯลฯ) ให้คงไว้เหมือนเดิม ***
 
 // ใส่ชื่อให้ทุก element  ที่เจอ
 function updateUserId(userId) {
@@ -153,11 +123,11 @@ async function loadPage(page) {
     document.getElementById("app").innerHTML = html;
 
     if (liff.isLoggedIn()) {
-      const profile = await liff.getProfile();
-      console.log("[SPA] refresh profile after load", profile.userId);
-      updateUserId(profile.userId);
-      updateDisplayName(profile.displayName);
-      updatePictureUrl(profile.pictureUrl);
+      userProfile = await liff.getProfile();
+      console.log("[SPA] refresh profile after load", userProfile.userId);
+      updateUserId(userProfile.userId);
+      updateDisplayName(userProfile.displayName);
+      updatePictureUrl(userProfile.pictureUrl);
     }
   } catch (err) {
     console.error("[SPA] load error", err);
@@ -193,5 +163,107 @@ function handleHashChange() {
   loadPage(hash);
 }
 
-
 window.addEventListener("hashchange", handleHashChange);
+
+// --- 📝 ฟอร์มลงทะเบียน (ทำงานผ่าน SPA) ---
+window.submitForm = async function(e) {
+  e.preventDefault();
+
+  if (!userProfile) {
+    Swal.fire("ข้อผิดพลาด", "ไม่พบข้อมูล LINE ของคุณ กรุณาเปิดผ่าน LINE อีกครั้ง", "error");
+    return;
+  }
+
+  const submitBtn = document.querySelector("button[type='submit']");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "กำลังบันทึก...";
+  submitBtn.style.backgroundColor = "#6c757d";
+
+  const nameInput = document.getElementById("name");
+  const phoneInput = document.getElementById("phone");
+  const emailInput = document.getElementById("email");
+  const addressInput = document.getElementById("address");
+
+  let hasError = false;
+
+  const showError = (input, message) => {
+    const formControl = input.parentElement;
+    formControl.classList.add("error");
+    formControl.classList.remove("success");
+    const small = formControl.querySelector("small");
+    if(small) small.innerText = message;
+  };
+
+  const showSuccess = (input) => {
+    const formControl = input.parentElement;
+    formControl.classList.add("success");
+    formControl.classList.remove("error");
+  };
+
+  if (nameInput.value.trim() === "") {
+    showError(nameInput, "กรุณากรอกชื่อ-นามสกุล");
+    hasError = true;
+  } else { showSuccess(nameInput); }
+
+  if (phoneInput.value.trim().length !== 10 || !/^\d{10}$/.test(phoneInput.value.trim())) {
+    showError(phoneInput, "เบอร์โทรศัพท์ต้องมี 10 หลัก");
+    hasError = true;
+  } else { showSuccess(phoneInput); }
+
+  if (emailInput.value.trim() === "") {
+    showError(emailInput, "กรุณากรอกอีเมล");
+    hasError = true;
+  } else { showSuccess(emailInput); }
+
+  if (addressInput.value.trim() === "") {
+    showError(addressInput, "กรุณากรอกที่อยู่");
+    hasError = true;
+  } else { showSuccess(addressInput); }
+
+  if (hasError) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "ลงทะเบียน";
+    submitBtn.style.backgroundColor = "#275c27";
+    return;
+  }
+
+  // แพ็กข้อมูล
+  const payload = {
+    action: "registerUser",
+    data: {
+      line_uid: userProfile.userId,
+      line_name: userProfile.displayName,
+      profile_image: userProfile.pictureUrl,
+      name: nameInput.value,
+      phone: phoneInput.value,
+      email: emailInput.value,
+      address: addressInput.value
+    }
+  };
+
+  try {
+    const res = await fetch(NETLIFY_FUNCTION_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    
+    const result = await res.json();
+    
+    if (result.success) {
+      isRegistered = true;
+      Swal.fire("สำเร็จ!", "ลงทะเบียนเรียบร้อยแล้ว", "success").then(() => {
+        // ลงทะเบียนเสร็จ พาไปยังหน้า Home
+        window.location.hash = "home";
+      });
+    } else {
+      throw new Error(result.message || "Unknown error");
+    }
+  } catch(err) {
+    console.error(err);
+    Swal.fire("ข้อผิดพลาด", "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่", "error");
+    submitBtn.disabled = false;
+    submitBtn.textContent = "ลงทะเบียน";
+    submitBtn.style.backgroundColor = "#275c27";
+  }
+};
