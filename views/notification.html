@@ -14,20 +14,20 @@
             display: flex;
             justify-content: center;
         }
-        .app-container {
+        .app-container-noti {
             width: 100%;
             max-width: 450px;
             box-sizing: border-box;
             padding: 20px;
         }
-        .header {
+        .noti-header {
             font-size: 1.5rem;
             font-weight: 600;
             color: #333;
             margin-bottom: 20px;
             text-align: center;
         }
-        .notification-card {
+        .noti-card {
             background: #fff;
             border-radius: 12px;
             padding: 15px;
@@ -37,7 +37,7 @@
             align-items: flex-start;
             gap: 15px;
         }
-        .icon {
+        .noti-icon {
             background-color: #e0ffe0;
             color: #2e8b57;
             width: 40px;
@@ -49,26 +49,26 @@
             font-size: 1.2rem;
             flex-shrink: 0;
         }
-        .icon.alert {
+        .noti-icon.alert {
             background-color: #ffeef0;
             color: #d9534f;
         }
-        .content {
+        .noti-content {
             flex-grow: 1;
         }
-        .title {
+        .noti-title {
             font-size: 1rem;
             font-weight: 600;
             color: #333;
             margin-bottom: 5px;
         }
-        .desc {
+        .noti-desc {
             font-size: 0.85rem;
             color: #666;
             margin-bottom: 8px;
             line-height: 1.4;
         }
-        .time {
+        .noti-time {
             font-size: 0.75rem;
             color: #999;
             text-align: right;
@@ -76,24 +76,24 @@
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="header">การแจ้งเตือน</div>
+    <div class="app-container-noti">
+        <div class="noti-header">การแจ้งเตือน</div>
 
-        <div class="notification-card">
-            <div class="icon">💉</div>
-            <div class="content">
-                <div class="title">ถึงกำหนดฉีดวัคซีน</div>
-                <div class="desc">น้องแซลม่อนถึงกำหนดฉีดวัคซีนป้องกันโรคพิษสุนัขบ้าแล้ว สามารถนัดหมายคลินิกผ่านแอปได้เลยค่ะ</div>
-                <div class="time">วันนี้, 10:00 น.</div>
+        <div class="noti-card">
+            <div class="noti-icon">💉</div>
+            <div class="noti-content">
+                <div class="noti-title">ถึงกำหนดฉีดวัคซีน</div>
+                <div class="noti-desc">น้องแซลม่อนถึงกำหนดฉีดวัคซีนป้องกันโรคพิษสุนัขบ้าแล้ว สามารถนัดหมายคลินิกผ่านแอปได้เลยค่ะ</div>
+                <div class="noti-time">วันนี้, 10:00 น.</div>
             </div>
         </div>
 
-        <div class="notification-card">
-            <div class="icon alert">⚕️</div>
-            <div class="content">
-                <div class="title">นัดพบสัตวแพทย์</div>
-                <div class="desc">พรุ่งนี้มีนัดตรวจสุขภาพน้องแหลม เวลา 14:00 น. ที่คลินิกสัตว์รักษ์สัตว์</div>
-                <div class="time">เมื่อวานนี้, 15:30 น.</div>
+        <div class="noti-card">
+            <div class="noti-icon alert">⚕️</div>
+            <div class="noti-content">
+                <div class="noti-title">นัดพบสัตวแพทย์</div>
+                <div class="noti-desc">พรุ่งนี้มีนัดตรวจสุขภาพน้องแหลม เวลา 14:00 น. ที่คลินิกสัตว์รักษ์สัตว์</div>
+                <div class="noti-time">เมื่อวานนี้, 15:30 น.</div>
             </div>
         </div>
 

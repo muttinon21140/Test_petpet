@@ -129,9 +129,60 @@ async function loadPage(page) {
       updateDisplayName(userProfile.displayName);
       updatePictureUrl(userProfile.pictureUrl);
     }
+    
+    // ---- Page Specific Behaviors ----
+    if (page === "pet-add") {
+      setupPetAddPage();
+    } else if (page === "home") {
+      fetchAndDisplayPets();
+    }
+
   } catch (err) {
     console.error("[SPA] load error", err);
     document.getElementById("app").innerHTML = "<p>Error loading page.</p>";
+  }
+}
+
+// --- 🏠 จัดการหน้า Home ---
+async function fetchAndDisplayPets() {
+  if (!userProfile) return;
+  const listEl = document.getElementById("home-pet-list");
+  const countEl = document.getElementById("home-pet-count");
+  if (!listEl) return;
+
+  listEl.innerHTML = '<div style="text-align: center; color: #666; width: 100%; padding: 20px;">กำลังโหลดข้อมูล...</div>';
+
+  try {
+    const res = await fetch(`${NETLIFY_FUNCTION_URL}?action=getPets&userId=${encodeURIComponent(userProfile.userId)}`);
+    const result = await res.json();
+    
+    if (result.success && result.data.length > 0) {
+      if(countEl) countEl.textContent = result.data.length;
+      
+      listEl.innerHTML = "";
+      result.data.forEach(pet => {
+         const imgBg = pet.profile_image ? `url(${pet.profile_image})` : `url(https://via.placeholder.com/80x80/cccccc/ffffff?text=Pet)`;
+         
+         listEl.innerHTML += `
+         <div class="pet-card">
+          <div class="pet-info">
+            <div class="pet-name">${pet.pet_name}</div>
+            <div class="pet-species">${pet.pet_species || 'ไม่ระบุ'}</div>
+            <button class="detail-button" onclick="location.hash='pet-detail?id=${pet.pet_id}'">ดูรายละเอียด →</button>
+          </div>
+          <div class="pet-image-container">
+            <div class="pet-image" style="background-image: ${imgBg}; background-size: cover; background-position: center; border-radius: 40px;"></div>
+          </div>
+        </div>
+         `;
+      });
+    } else {
+      if(countEl) countEl.textContent = "0";
+      listEl.innerHTML = '<div style="text-align: center; color: #666; width: 100%; padding: 20px;">ยังไม่มีสัตว์เลี้ยง ลองเพิ่มเลย!</div>';
+    }
+  } catch (err) {
+    console.error(err);
+    listEl.innerHTML = '<div style="text-align: center; color: red; width: 100%; padding: 20px;">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>';
   }
 }
 
@@ -267,3 +318,103 @@ window.submitForm = async function(e) {
     submitBtn.style.backgroundColor = "#275c27";
   }
 };
+
+// --- 🐾 ฟอร์มเพิ่มสัตว์เลี้ยง ---
+function setupPetAddPage() {
+  const actualFileInput = document.getElementById('actual-file-input');
+  const placeholderImage = document.querySelector('.placeholder-image');
+  const cameraIcon = document.querySelector('.camera-icon-large');
+  const successIndicator = document.querySelector('.status-icon');
+  
+  let base64Image = "";
+
+  if (actualFileInput) {
+    actualFileInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          base64Image = e.target.result; // เก็บรูปไว้เป็น base64 strings
+          placeholderImage.src = base64Image;
+          placeholderImage.style.display = 'block';
+          cameraIcon.style.display = 'none';
+          successIndicator.classList.add('visible');
+        }
+        reader.readAsDataURL(file);
+      } else {
+        base64Image = "";
+        placeholderImage.src = '';
+        placeholderImage.style.display = 'none';
+        cameraIcon.style.display = 'block';
+        successIndicator.classList.remove('visible');
+      }
+    });
+  }
+
+  // จัดการปุ่มย้อนกลับ
+  const backBtn = document.querySelector('.back-button');
+  if(backBtn) {
+    backBtn.addEventListener('click', () => {
+      window.history.back();
+    });
+  }
+
+  // จัดการกดปุ่ม Submit เพื่อเพิ่มข้อมูลจริงผ่าน API
+  const form = document.querySelector('.add-pet-form');
+  if(form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (!userProfile) {
+        Swal.fire("ข้อผิดพลาด", "ไม่พบข้อมูลผู้ใช้ของท่าน", "error");
+        return;
+      }
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = "กำลังบันทึก...";
+      submitBtn.style.backgroundColor = "#6c757d";
+
+      // รวบรวมข้อมูลตามที่ฐานข้อมูลกำหนด (17 columns mapping)
+      const payload = {
+        action: "addPet",
+        data: {
+          user_id: userProfile.userId,
+          pet_name: document.getElementById('pet-name').value,
+          species: document.getElementById('pet-species').value,
+          breed: document.getElementById('pet-breed').value,
+          gender: document.getElementById('pet-gender').value,
+          birth_date: document.getElementById('pet-birthday').value,
+          age: document.getElementById('pet-age').value,
+          status_sterilization: document.getElementById('pet-status_sterilization').value,
+          pet_weight: document.getElementById('pet-weight').value,
+          profile_image_url: base64Image
+        }
+      };
+
+      try {
+        const res = await fetch(NETLIFY_FUNCTION_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await res.json();
+        
+        if (result.success) {
+          Swal.fire("สำเร็จ!", "เพิ่มสัตว์เลี้ยงแล้ว", "success").then(() => {
+            window.location.hash = "home"; // เด้งกลับหน้าโฮม
+          });
+        } else {
+          throw new Error(result.message || "Unknown error");
+        }
+      } catch(err) {
+        console.error(err);
+        Swal.fire("ข้อผิดพลาด", "ไม่สามารถบันทึกข้อมูลได้", "error");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "เพิ่มสัตว์เลี้ยง";
+        submitBtn.style.backgroundColor = "#4caf50";
+      }
+    });
+  }
+}

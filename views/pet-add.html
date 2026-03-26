@@ -199,38 +199,6 @@
       <button type="submit" style="font-family: Prompt, sans-serif;">เพิ่มสัตว์เลี้ยง</button>
     </form>
   </div>
-  <script src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js" type="module"></script>
-  <script src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js" nomodule></script>
-  <script>
-    // JavaScript เพื่อจัดการการอัปโหลดรูปภาพ (ถ้าจำเป็น)
-    const actualFileInput = document.getElementById('actual-file-input');
-    const placeholderImage = document.querySelector('.placeholder-image');
-    const cameraIcon = document.querySelector('.camera-icon-large');
-    const successIndicator = document.querySelector('.status-icon');
-
-    actualFileInput.addEventListener('change', function () {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          placeholderImage.src = e.target.result; // แสดงภาพที่อัปโหลด
-          placeholderImage.style.display = 'block'; // แสดงรูปภาพ
-          cameraIcon.style.display = 'none'; // ซ่อนไอคอนกล้อง
-          successIndicator.classList.add('visible'); // แสดงเครื่องหมายถูก
-        }
-        reader.readAsDataURL(file);
-      } else {
-        // กรณีผู้ใช้ยกเลิกการเลือกไฟล์
-        placeholderImage.src = '';
-        placeholderImage.style.display = 'none'; // ซ่อนรูปภาพ
-        cameraIcon.style.display = 'block'; // แสดงไอคอนกล้อง
-        successIndicator.classList.remove('visible'); // ซ่อนเครื่องหมายถูก
-      }
-    });
-    document.querySelector('.back-button').addEventListener('click', () => {
-      window.history.back();
-    });
-  </script>
+  </div>
 </body>
-
 </html>

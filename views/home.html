@@ -248,7 +248,7 @@
       <section class="stats-grid">
         <div class="stat-card light-green">
           <div class="stat-label">สัตว์เลี้ยงของคุณ</div>
-          <div class="stat-value">2</div>
+          <div class="stat-value" id="home-pet-count">0</div>
         </div>
       </section>
 
@@ -276,31 +276,9 @@
             "
         /></a>
       </h3>
-      <section class="pet-list">
-        <div class="pet-card">
-          <div class="pet-info">
-            <div class="pet-name">แซลม่อน</div>
-            <div class="pet-species">สุนัข(แทนประเภทสัตว์)</div>
-            <button class="detail-button">ดูรายละเอียด →</button>
-          </div>
-          <div class="pet-image-container">
-            <div class="pet-image cola"></div>
-          </div>
-        </div>
-
-        <div class="pet-card">
-          <div class="pet-info">
-            <div class="pet-name">แหลม</div>
-            <div class="pet-species">แมว(แทนประเภทสัตว์)</div>
-            <button class="detail-button">ดูรายละเอียด →</button>
-          </div>
-          <div class="pet-image-container">
-            <div class="pet-image somsom"></div>
-          </div>
-        </div>
+      <section class="pet-list" id="home-pet-list">
+        <div style="text-align: center; color: #666; width: 100%; padding: 20px;">กำลังโหลดข้อมูล...</div>
       </section>
     </div>
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script src="app.js"></script>
   </body>
 </html>
