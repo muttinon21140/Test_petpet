@@ -174,15 +174,7 @@
         </div>
         
         <div class="calendar-grid" id="calendar-grid">
-            <!-- ตัวอย่างโครงสร้าง UI ปฏิทิน (รอสลับไปใช้ JS สร้าง) -->
-            <div class="calendar-cell empty"></div>
-            <div class="calendar-cell">1</div>
-            <div class="calendar-cell">2</div>
-            <div class="calendar-cell">3</div>
-            <div class="calendar-cell has-event">4</div>
-            <div class="calendar-cell active">5</div>
-            <div class="calendar-cell">6</div>
-            <div class="calendar-cell">7</div>
+            <!-- ปฏิทิน (สร้างผ่าน JS) -->
         </div>
         
         <button class="add-appointment-btn" onclick="location.hash='add-schedule'">+ เพิ่มนัดหมายใหม่</button>
@@ -191,33 +183,12 @@
     <!-- 2. Upcoming Schedules -->
     <h3 class="section-title">นัดหมายที่กำลังจะมาถึง</h3>
     <div class="schedule-list" id="upcoming-schedules">
-        <!-- ข้อมูล Mockup รอเปลี่ยนการ Render ผ่าน JS -->
-        <div class="schedule-card">
-            <div class="schedule-info">
-                <div class="date">พรุ่งนี้, 14:00 น.</div>
-                <div class="title">ตรวจสุขภาพประจำปี</div>
-                <div class="pet-tag">น้องแหลม</div>
-            </div>
-        </div>
-        <div class="schedule-card">
-            <div class="schedule-info">
-                <div class="date">30 เม.ย. 2026, 10:00 น.</div>
-                <div class="title">อาบน้ำตัดขน</div>
-                <div class="pet-tag">น้องแซลม่อน</div>
-            </div>
-        </div>
+        <!-- Render ผ่าน JS -->
     </div>
 
     <!-- 3. Past Schedules -->
     <h3 class="section-title" style="color: #777; margin-top: 30px;">ประวัตินัดหมาย</h3>
     <div class="schedule-list" id="past-schedules">
-        <!-- ข้อมูล Mockup ประวัติย้อนหลัง -->
-        <div class="schedule-card past">
-            <div class="schedule-info">
-                <div class="date">15 มี.ค. 2026</div>
-                <div class="title">ฉีดวัคซีนรวม</div>
-                <div class="pet-tag">น้องแหลม</div>
-            </div>
-        </div>
+        <!-- Render ผ่าน JS -->
     </div>
 </div>

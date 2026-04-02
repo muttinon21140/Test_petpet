@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Schedule</title>
+  <style>
+    /* -------------------- Add Schedule Styles -------------------- */
+    .app-container-add-schedule {
+        width: 100%;
+        max-width: 450px;
+        box-sizing: border-box;
+        padding: 20px;
+        margin: auto;
+    }
+    .back-btn {
+        font-size: 24px;
+        color: #333;
+        cursor: pointer;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+    .add-schedule-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .form-group label {
+        font-weight: 500;
+        color: #333;
+    }
+    .form-group input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+    }
+    .submit-btn {
+        background-color: #0073ff;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.2s;
+        margin-top: 10px;
+    }
+    .submit-btn:hover {
+        background-color: #005bb5;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container-add-schedule">
+    <ion-icon name="arrow-back-outline" class="back-btn" onclick="history.back()"></ion-icon>
+    <h2 style="text-align: center; margin-top: 0;">เพิ่มนัดหมายใหม่</h2>
+    <form id="add-schedule-form" class="add-schedule-form">
+      <div class="form-group">
+        <label for="sched-title">หัวข้อนัดหมาย*</label>
+        <input type="text" id="sched-title" required placeholder="เช่น พาไปหาหมอ, อาบน้ำตัดขน" />
+      </div>
+      <div class="form-group">
+        <label for="sched-date">วันที่*</label>
+        <input type="date" id="sched-date" required />
+      </div>
+      <div class="form-group">
+        <label for="sched-time">เวลา*</label>
+        <input type="time" id="sched-time" required />
+      </div>
+      <div class="form-group">
+        <label for="sched-pet">ชื่อสัตว์เลี้ยง*</label>
+        <input type="text" id="sched-pet" required placeholder="รินะ, แอลลี่" />
+      </div>
+      <button type="submit" class="submit-btn" style="font-family: Prompt, sans-serif;">บันทึกนัดหมาย</button>
+    </form>
+  </div>
+</body>
+</html>
