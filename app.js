@@ -135,6 +135,10 @@ async function loadPage(page) {
       setupPetAddPage();
     } else if (page === "home") {
       fetchAndDisplayPets();
+    } else if (page === "schedule") {
+      setupSchedulePage();
+    } else if (page === "add-schedule") {
+      setupAddSchedulePage();
     }
 
   } catch (err) {
@@ -417,4 +421,213 @@ function setupPetAddPage() {
       }
     });
   }
+}
+
+// --- 📅 จัดการหน้านัดหมาย ---
+let currentNavDate = new Date();
+
+async function setupSchedulePage() {
+  const monthYearEl = document.getElementById('calendar-month-year');
+  const gridEl = document.getElementById('calendar-grid');
+  const prevBtn = document.getElementById('prev-month-btn');
+  const nextBtn = document.getElementById('next-month-btn');
+  const upcomingEl = document.getElementById('upcoming-schedules');
+  const pastEl = document.getElementById('past-schedules');
+  
+  if (!monthYearEl || !gridEl || !upcomingEl || !pastEl) return;
+  
+  if (!userProfile) return;
+
+  gridEl.innerHTML = '<div style="grid-column: span 7; text-align: center; color: #666;">กำลังโหลด...</div>';
+  upcomingEl.innerHTML = '<div style="text-align: center; color: #666;">กำลังโหลด...</div>';
+  pastEl.innerHTML = '<div style="text-align: center; color: #666;">กำลังโหลด...</div>';
+
+  let schedules = [];
+
+  try {
+    const res = await fetch(`${NETLIFY_FUNCTION_URL}?action=getSchedules&userId=${encodeURIComponent(userProfile.userId)}`);
+    const result = await res.json();
+    if (result.success && result.data) {
+      schedules = result.data.map(s => {
+         const dt = new Date(s.date_time);
+         // Handle valid date
+         if (!isNaN(dt.getTime())) {
+            const yyyy = dt.getFullYear();
+            const mm = String(dt.getMonth() + 1).padStart(2, '0');
+            const dd = String(dt.getDate()).padStart(2, '0');
+            const HH = String(dt.getHours()).padStart(2, '0');
+            const MM = String(dt.getMinutes()).padStart(2, '0');
+            return {
+               id: s.created_at,
+               title: s.title,
+               date: `${yyyy}-${mm}-${dd}`,
+               time: `${HH}:${MM}`,
+               pet: s.pet_name
+            };
+         }
+         return {
+            date: "", time: "", title: s.title, pet: s.pet_name
+         };
+      }).filter(s => s.date !== "");
+    }
+  } catch (err) {
+    console.error("Error fetching schedules:", err);
+  }
+  
+  function renderCalendar() {
+    gridEl.innerHTML = '';
+    
+    const year = currentNavDate.getFullYear();
+    const month = currentNavDate.getMonth();
+    
+    const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+    monthYearEl.textContent = `${monthNames[month]} ${year}`;
+    
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-cell empty';
+        gridEl.appendChild(emptyCell);
+    }
+    
+    const today = new Date();
+    
+    for (let i = 1; i <= daysInMonth; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'calendar-cell';
+        cell.textContent = i;
+        
+        const cellDateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+        const hasEvent = schedules.some(s => s.date === cellDateStr);
+        if (hasEvent) {
+          cell.classList.add('has-event');
+        }
+        
+        if (today.getDate() === i && today.getMonth() === month && today.getFullYear() === year) {
+            cell.classList.add('active');
+        }
+        
+        gridEl.appendChild(cell);
+    }
+  }
+  
+  renderCalendar();
+  
+  if (prevBtn) {
+    prevBtn.onclick = () => {
+      currentNavDate.setMonth(currentNavDate.getMonth() - 1);
+      renderCalendar();
+    };
+  }
+  
+  if (nextBtn) {
+    nextBtn.onclick = () => {
+      currentNavDate.setMonth(currentNavDate.getMonth() + 1);
+      renderCalendar();
+    };
+  }
+  
+  upcomingEl.innerHTML = '';
+  pastEl.innerHTML = '';
+  
+  const now = new Date();
+  const upcomings = [];
+  const pasts = [];
+  
+  schedules.forEach(s => {
+    const sDate = new Date(`${s.date}T${s.time}:00`);
+    if (sDate >= now) upcomings.push(s);
+    else pasts.push(s);
+  });
+  
+  upcomings.sort((a,b) => new Date(`${a.date}T${a.time}:00`) - new Date(`${b.date}T${b.time}:00`));
+  pasts.sort((a,b) => new Date(`${b.date}T${b.time}:00`) - new Date(`${a.date}T${a.time}:00`)); // desc
+  
+  function renderScheduleCard(s, isPast) {
+    const d = new Date(`${s.date}T${s.time}:00`);
+    const dateStr = d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+    const timeStr = s.time;
+    return `
+      <div class="schedule-card ${isPast ? 'past' : ''}">
+          <div class="schedule-info">
+              <div class="date">${dateStr}, ${timeStr} น.</div>
+              <div class="title">${s.title}</div>
+              <div class="pet-tag">${s.pet}</div>
+          </div>
+      </div>
+    `;
+  }
+  
+  if (upcomings.length === 0) {
+    upcomingEl.innerHTML = '<div style="color:#666; text-align:center;">ไม่มีนัดหมาย</div>';
+  } else {
+    upcomings.forEach(s => { upcomingEl.innerHTML += renderScheduleCard(s, false); });
+  }
+  
+  if (pasts.length === 0) {
+    pastEl.innerHTML = '<div style="color:#666; text-align:center;">ไม่มีประวัติ</div>';
+  } else {
+    pasts.forEach(s => { pastEl.innerHTML += renderScheduleCard(s, true); });
+  }
+}
+
+function setupAddSchedulePage() {
+  const form = document.getElementById('add-schedule-form');
+  if (!form) return;
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    if (!userProfile) {
+      Swal.fire("ข้อผิดพลาด", "ไม่พบข้อมูลผู้ใช้ของท่าน", "error");
+      return;
+    }
+
+    const title = document.getElementById('sched-title').value;
+    const date = document.getElementById('sched-date').value;
+    const time = document.getElementById('sched-time').value;
+    const pet = document.getElementById('sched-pet').value;
+    
+    if(!title || !date || !time || !pet) return;
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = "กำลังบันทึก...";
+    submitBtn.style.backgroundColor = "#6c757d";
+
+    const payload = {
+      action: "addSchedule",
+      data: {
+        line_uid: userProfile.userId,
+        pet_name: pet,
+        date_time: `${date}T${time}:00`,
+        title: title,
+        status: "upcoming"
+      }
+    };
+
+    try {
+      const res = await fetch(NETLIFY_FUNCTION_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      
+      const result = await res.json();
+      
+      if (result.success) {
+        Swal.fire("สำเร็จ!", "เพิ่มนัดหมายเรียบร้อย", "success").then(() => {
+          window.location.hash = "schedule";
+        });
+      } else {
+        throw new Error(result.message || "Unknown error");
+      }
+    } catch(err) {
+      console.error(err);
+      Swal.fire("ข้อผิดพลาด", "ไม่สามารถบันทึกข้อมูลได้", "error");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "บันทึกนัดหมาย";
+      submitBtn.style.backgroundColor = "#0073ff";
+    }
+  };
 }
