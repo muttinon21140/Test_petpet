@@ -33,120 +33,91 @@
         /* -------------------- Footer Buttons -------------------- */
         .footer-buttons {
             position: fixed;
-            bottom: 20px;
+            bottom: 0; /* ติดขอบล่าง */
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100% - 40px);
+            width: 100%;
             max-width: 410px;
             /* จำกัดความกว้างเท่ากับ container */
-            gap: 10px;
             display: none;
+            z-index: 1000;
         }
 
         .navigation {
             position: relative;
-            width: 330px;
-            height: 100px;
-            /* ความสูงของแถบ */
-            background: #fff;
-            border-radius: 20px;
+            width: 100%;
+            min-height: 70px; /* ใช้ min-height แทน height ตายตัว */
+            background: #ffffff;
+            border-radius: 20px 20px 0 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.05);
-            padding: 0 20px;
-            /* ระยะห่างจากขอบซ้ายขวา */
-            margin: auto;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.05);
+            padding: 5px 0; /* เพิ่ม padding บนล่างนิดหน่อย */
+            padding-bottom: calc(5px + env(safe-area-inset-bottom)); /* รองรับขอบล่างของ iPhone */
+            box-sizing: border-box;
         }
 
         .navigation ul {
             display: flex;
             width: 100%;
-            padding-left: 10px;
-            padding-right: 10px;
+            height: 100%;
+            padding: 0;
+            margin: 0;
             justify-content: space-between;
-            /* กระจายไอคอนให้ห่างเท่ากัน */
         }
 
         .navigation ul li {
             position: relative;
             list-style: none;
-            width: 50px;
-            /* ความกว้างเริ่มต้น (วงกลม) */
-            height: 50px;
-            border-radius: 50px;
+            flex: 1; /* ให้ทุกเมนูแบ่งความกว้างเท่าๆ กัน */
+            height: 60px;
             z-index: 1;
             cursor: pointer;
             display: flex;
             justify-content: center;
-            /* จัดไอคอนกึ่งกลาง */
             align-items: center;
-            transition: 0.5s;
-            /* ความนุ่มนวลตอนขยาย */
-            overflow: hidden;
-            /* ซ่อนข้อความที่ยาวเกินตอนยังไม่ขยาย */
         }
 
         .navigation ul li a {
             position: relative;
             display: flex;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             text-decoration: none;
             width: 100%;
-            color: #333;
-            /* สีไอคอนปกติ */
+            height: 100%;
+            color: #94a3b8;
+            transition: all 0.3s ease;
         }
 
         .navigation ul li a .icon {
             position: relative;
             display: block;
-            min-width: 50px;
-            /* ต้องกำหนด min-width เพื่อไม่ให้ไอคอนเบี้ยว */
-            height: 50px;
-            line-height: 55px;
-            /* จัดกึ่งกลางแนวตั้ง */
-            text-align: center;
             font-size: 1.5em;
-            transition: 0.5s;
+            margin-bottom: 2px;
+            transition: 0.3s;
         }
 
         .navigation ul li a .title {
             position: relative;
             display: block;
-            padding-left: 0px;
-            height: 60px;
-            line-height: 60px;
-            white-space: nowrap;
-            /* ห้ามตัดบรรทัด */
-            opacity: 0;
-            /* ซ่อนข้อความไว้ก่อน */
-            transform: translateX(10px);
-            transition: 0.5s;
-            color: #fff;
-            /* สีข้อความตอน Active */
-            font-size: 0.85em;
+            font-size: 0.65em; /* ลดขนาดฟอนต์ลงนิดนึงเพื่อไม่ให้เบียด */
             font-weight: 500;
+            transition: 0.3s;
+            white-space: nowrap; /* ห้ามให้ข้อความตกบรรทัด */
         }
 
         /* --- สถานะ Active (เมื่อถูกเลือก) --- */
 
-        .navigation ul li.active {
-            width: 140px;
-            /* ขยายความกว้าง */
-            background: #275c27;
-            /* สีพื้นหลังแคปซูล (Dark Navy) */
+        .navigation ul li.active a {
+            color: #10b981; /* สีเขียว */
         }
 
         .navigation ul li.active a .icon {
-            color: #fff;
-            /* เปลี่ยนสีไอคอนเป็นขาว */
-        }
-
-        .navigation ul li.active a .title {
-            opacity: 1;
-            /* โชว์ข้อความ */
-            transform: translateX(0);
-            /* เลื่อนข้อความกลับมาที่เดิม */
+            color: #10b981; /* สีเขียว */
+            transform: translateY(-3px); /* เด้งขึ้นนิดนึงเวลา Active */
         }
 
     </style>
@@ -190,6 +161,7 @@
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/liff-require.js"></script>
     <script src="app.js"></script>
 </body>
 

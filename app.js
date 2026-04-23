@@ -3,8 +3,36 @@ let isRegistered = false;
 let userProfile = null; // เก็บข้อมูลผู้ใช้ไว้ทั่วแอป
 const NETLIFY_FUNCTION_URL = "https://petpettest.netlify.app/.netlify/functions/api";
 
+// 🛠 โหมดพัฒนางาน (ตั้งค่าเป็น true เพื่อข้ามการล็อกอิน LIFF เวลาออกแบบบน Go Live)
+// ⚠️ อย่าลืมเปลี่ยนเป็น false ก่อนนำไปใช้งานจริงบน LINE
+const DEV_MODE = false; 
+
 async function initializeLiff() {
   console.log("[LIFF] initialize start");
+
+  if (DEV_MODE) {
+    console.log("🛠 [DEV MODE] ข้ามระบบ LIFF และจำลองข้อมูลผู้ใช้");
+    userProfile = {
+      userId: "U_dev_mock_123",
+      displayName: "Designer Mode",
+      pictureUrl: "https://via.placeholder.com/150"
+    };
+    isRegistered = true; 
+    
+    const footer = document.querySelector(".footer-buttons");
+    if (footer) footer.style.display = "flex";
+
+    if (!location.hash) {
+      location.hash = "home";
+    } else {
+      handleHashChange(); 
+    }
+
+    updateUserId(userProfile.userId);
+    updateDisplayName(userProfile.displayName);
+    updatePictureUrl(userProfile.pictureUrl);
+    return;
+  }
 
   await liff.init({ liffId });
   console.log("[LIFF] init done");
@@ -122,7 +150,11 @@ async function loadPage(page) {
     const html = await res.text();
     document.getElementById("app").innerHTML = html;
 
-    if (liff.isLoggedIn()) {
+    if (DEV_MODE && userProfile) {
+      updateUserId(userProfile.userId);
+      updateDisplayName(userProfile.displayName);
+      updatePictureUrl(userProfile.pictureUrl);
+    } else if (typeof liff !== 'undefined' && liff.isLoggedIn && liff.isLoggedIn()) {
       userProfile = await liff.getProfile();
       console.log("[SPA] refresh profile after load", userProfile.userId);
       updateUserId(userProfile.userId);
