@@ -9,10 +9,15 @@
         rel="stylesheet" />
     <style>
         /* -------------------- Global Reset & Setup -------------------- */
+        html, body {
+            height: 100%;
+            height: 100dvh; /* ใช้ dvh เพื่อความพอดีกับมือถือเป๊ะๆ */
+            overflow: hidden; /* ป้องกันการเลื่อนหน้าจอที่ระดับ body เพื่อไม่ให้ Navigation กระตุก */
+        }
+
         body {
             font-family: "Prompt", sans-serif;
             background-color: #f0f4f9;
-            /* สีพื้นหลังอ่อน ๆ */
             margin: 0;
             padding: 0;
             display: flex;
@@ -22,25 +27,27 @@
         .app-container-index {
             width: 100%;
             max-width: 410px;
-            /* กำหนดความกว้างสูงสุดของแอป */
-            min-height: 100vh;
+            height: 100%; /* ให้เต็มจอ */
+            overflow-y: auto; /* ให้มาเลื่อนเนื้อหาในกล่องนี้แทน */
+            -webkit-overflow-scrolling: touch; /* เลื่อนลื่นไหลบน iOS */
             padding: 20px;
             box-sizing: border-box;
             padding-bottom: 120px;
-            /* เพิ่มพื้นที่ด้านล่างสำหรับ footer */
         }
 
         /* -------------------- Footer Buttons -------------------- */
         .footer-buttons {
             position: fixed;
-            bottom: 0; /* ติดขอบล่าง */
-            left: 50%;
-            transform: translateX(-50%);
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 0 auto; /* จัดกึ่งกลางโดยไม่ต้องใช้ transform เพื่อลดการกระตุก */
             width: 100%;
             max-width: 410px;
-            /* จำกัดความกว้างเท่ากับ container */
             display: none;
             z-index: 1000;
+            -webkit-transform: translateZ(0); /* บังคับใช้ Hardware Acceleration บนมือถือ */
+            transform: translateZ(0);
         }
 
         .navigation {
